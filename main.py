@@ -8,9 +8,18 @@ from sqlalchemy.ext.asyncio.session import AsyncSession
 from fastapi.responses import PlainTextResponse
 from routers.news import router
 from pydantic import BaseModel, Field
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 app.include_router(router)
+
+# 配置CORS，解决跨域问题
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
