@@ -19,4 +19,5 @@ async_session = async_session_local()
 
 async def get_db():
     async with async_session_local() as session:
-        yield session
+        async with session.begin():  # begin事务，会自动commit
+            yield session  # yield保持会话挂起，直到依赖项使用完毕

@@ -46,6 +46,14 @@ async def get_news_detail(
         id: int = Query(..., alias="id")):
     news_detail = await news.get_news_detail(db, id)
 
+    # 增加views 并返回是否成功
+    success: bool = await news.increase_news_views(db, id)
+    if not success:  # 命中检测
+        raise HTTPException(status_code=400, detail="Views increase failed")
+
+    # 获取相关新闻
+    related_news: list[News] = await news.related_news(db, id, news_detail.category_id)
+
     return {
         "code": 200,
         "message": "success",
@@ -58,6 +66,6 @@ async def get_news_detail(
             "publishTime": news_detail.publish_time,
             "categoryId": news_detail.category_id,
             "views": news_detail.views,
-            "relatedNews": []
+            "relatedNews": related_news
         }
     }
