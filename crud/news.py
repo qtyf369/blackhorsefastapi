@@ -40,7 +40,7 @@ async def related_news(db: AsyncSession, id: int, category_id: int, limit: int =
 
     if not result:
         return []
-    return [{"id": id,
+    return [{"id": news_detail.id,
              "title": news_detail.title,
              "content": news_detail.content,
              "image": news_detail.image,
