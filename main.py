@@ -12,10 +12,12 @@ app = FastAPI()
 app.include_router(news.router)
 app.include_router(users.router)
 # 配置CORS，解决跨域问题
+origin = ["http://localhost:5173"]
 app.add_middleware(
+
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=origin,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

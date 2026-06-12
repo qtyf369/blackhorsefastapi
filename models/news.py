@@ -38,13 +38,13 @@ class News(Base):
     title: Mapped[str] = mapped_column(
         String(255), nullable=False, comment="新闻标题")
     description: Mapped[Optional[str]] = mapped_column(
-        String(255), nullable=True, comment="新闻描述")
+        String(255), comment="新闻描述")
     content: Mapped[str] = mapped_column(
         String(255), nullable=False, comment="新闻内容")
     image: Mapped[Optional[str]] = mapped_column(
-        String(255), nullable=True, comment="新闻图片URL")
+        String(255), comment="新闻图片URL")
     author: Mapped[Optional[str]] = mapped_column(
-        String(255), nullable=True, comment="作者")
+        String(255), comment="作者")
     category_id: Mapped[int] = mapped_column(
         Integer, nullable=False, comment="分类ID")
 
