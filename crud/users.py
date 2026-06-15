@@ -50,3 +50,15 @@ async def create_user_token(db: AsyncSession, user_id: int):
         db.add(token)
 
     return new_token  # 返回新的Token
+
+
+async def get_user_by_token(db: AsyncSession, token: str):
+    result = await db.execute(select(Usertoken).where(Usertoken.token == token))
+    db_token = result.scalar_one_or_none()
+    if not db_token or db_token.expires_at < datetime.now(timezone.utc):
+        return None
+
+    query = await db.execute(select(User).where(User.id == db_token.user_id))
+    user = query.scalar_one_or_none()
+
+    return user
