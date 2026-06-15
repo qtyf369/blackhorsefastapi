@@ -1,9 +1,16 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from crud import users
-from config.db_conf import get_db
 from fastapi import HTTPException, status
-from schemas.users import userInfoBase, userInfoResponse, userregister, userAuthResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from config.db_conf import get_db
+from crud import users
+from schemas.users import (
+    userAuthResponse,
+    userDataResponse,
+    userInfoBase,
+    userInfoResponse,
+    userregister,
+)
 from utils.response import success_response
 
 router = APIRouter(prefix="/api/user", tags=["user"])
@@ -22,7 +29,7 @@ async def register(userdata: userregister, db: AsyncSession = Depends(get_db)):
 
     # 生成访问令牌
     user_token: str = await users.create_user_token(db, user.id)
-    data = userAuthResponse(token=user_token, userInfo=userInfoResponse.model_validate(
+    data = userDataResponse(token=user_token, userInfo=userInfoResponse.model_validate(
         user))  # model_validate 将ORM模型转换为userInfoBase模型
     return success_response(msg="注册成功", data=data)
     # 返回注册成功响应

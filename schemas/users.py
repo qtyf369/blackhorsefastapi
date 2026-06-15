@@ -23,7 +23,7 @@ class userInfoResponse(userInfoBase):  # 固定的基础信息，必填
         from_attributes=True)
 
 
-class userAuthResponse(BaseModel):  # 固定的基础信息，必填
+class userDataResponse(BaseModel):  # 固定的基础信息，必填
     token: str = Field(..., description="用户令牌")
     user_info: userInfoResponse = Field(...,
                                         description="用户信息", alias="userInfo")
@@ -32,3 +32,9 @@ class userAuthResponse(BaseModel):  # 固定的基础信息，必填
         # from_attributes=True允许把ORM模型转换为Pydantic模型
         populate_by_name=True,
         from_attributes=True)
+
+
+class userAuthResponse(BaseModel):
+    code: int = Field(200, description="状态码")
+    message: str = Field("success", description="状态描述")
+    data: userDataResponse = Field(..., description="用户数据")
