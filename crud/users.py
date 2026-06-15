@@ -17,20 +17,15 @@ async def get_user_by_username(db: AsyncSession, username: str):
 
 
 async def create_user(db: AsyncSession, userdata: userregister):
-    # 不检查用户名是否存在，直接注册，只负责单个功能。用passlib加密密码。但写入数据库时会检查用户名是否存在，捕获后，抛出友好可读的错误信息。不然FastApi会报500错误。
-    try:
-        from utils.security import hash_password
-        encrypted_password = hash_password(userdata.password)
-        # 创建用户实例，一开始只需要用户名和密码。给模型类的字段赋值。
-        user = User(
-            username=userdata.username,
-            password=encrypted_password,
-        )
-        db.add(user)  # 这是个同步操作，会立即执行。把用户实例添加到会话中。会话结束时，会自动提交事务。
-        await db.flush()  # 把写入操作提交到数据库，但不会提交事务。
-        await db.refresh(user)  # 刷新用户实例，加载其他数据库生成的值。
-    except IntegrityError as e:  # 唯一约束冲突
-        raise HTTPException(status_code=400, detail="用户名已存在")
+    from utils.security import hash_password
+    encrypted_password = hash_password(userdata.password)
+    user = User(
+        username=userdata.username,
+        password=encrypted_password,
+    )
+    db.add(user)
+    await db.flush()
+    await db.refresh(user)
     return user
 
 

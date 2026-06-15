@@ -1,3 +1,4 @@
+from utils.exception_handler import exception_handler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
@@ -9,6 +10,9 @@ from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
 from routers import users, news
 app = FastAPI()
+# 异常处理函数
+exception_handler(app)
+
 app.include_router(news.router)
 app.include_router(users.router)
 # 配置CORS，解决跨域问题
