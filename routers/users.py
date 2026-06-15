@@ -4,19 +4,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config.db_conf import get_db
 from crud import users
+from models.users import User
 from schemas.users import (
-    userAuthResponse,
+    ApiResponse,
     userDataResponse,
     userInfoBase,
     userInfoResponse,
     userregister,
 )
+from utils.auth import get_current_user
 from utils.response import success_response
 
 router = APIRouter(prefix="/api/user", tags=["user"])
 
 
-@router.post("/register", response_model=userAuthResponse)
+@router.post("/register", response_model=ApiResponse[userDataResponse])
 async def register(userdata: userregister, db: AsyncSession = Depends(get_db)):
     # 检查用户名是否存在
     existing_user = await users.get_user_by_username(db, userdata.username)
@@ -34,7 +36,7 @@ async def register(userdata: userregister, db: AsyncSession = Depends(get_db)):
     return success_response(msg="注册成功", data=data)
 
 
-@router.post("/login", response_model=userAuthResponse)
+@router.post("/login", response_model=ApiResponse[userDataResponse])
 async def login(userdata: userregister, db: AsyncSession = Depends(get_db)):
     # 检查用户名是否存在
     existing_user = await users.get_user_by_username(db, userdata.username)
@@ -53,11 +55,7 @@ async def login(userdata: userregister, db: AsyncSession = Depends(get_db)):
     return success_response(msg="登录成功", data=data)
 
 
-@router.get("/info", response_model=userAuthResponse)
-async def check_info(user_id: int, db: AsyncSession = Depends(get_db)):
-    # 检查用户是否存在
-    user = await users.get_user_by_token(db, user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
-    return success_response(msg="检查用户信息成功", data=user)
+@router.get("/info", response_model=ApiResponse[userInfoResponse])
+async def get_info(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    data=userInfoResponse.model_validate(user)
+    return success_response(msg="获取用户信息成功", data=data)

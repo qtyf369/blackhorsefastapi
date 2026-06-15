@@ -1,7 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from pydantic import ConfigDict
-
+from typing import Generic, TypeVar
+# 定义泛型类型变量
+T = TypeVar("T")
 
 class userregister(BaseModel):
     username: str = Field(..., description="用户名")
@@ -34,7 +36,9 @@ class userDataResponse(BaseModel):  # 固定的基础信息，必填
         from_attributes=True)
 
 
-class userAuthResponse(BaseModel):
+
+# 封装返回体,泛型T
+class ApiResponse(BaseModel, Generic[T]):
     code: int = Field(200, description="状态码")
     message: str = Field("success", description="状态描述")
-    data: userDataResponse = Field(..., description="用户数据")
+    data: T | None = Field(None, description="数据")

@@ -1,8 +1,8 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from schemas.users import userAuthResponse
+from schemas.users import ApiResponse
 
 
-def success_response(msg: str = "success", data=None, ):
+def success_response(msg: str = "success", data=None):
 
-    return userAuthResponse(code=200, message=msg, data=data)
+    return ApiResponse(code=200, message=msg, data=data)
