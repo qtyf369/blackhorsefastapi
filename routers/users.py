@@ -51,3 +51,13 @@ async def login(userdata: userregister, db: AsyncSession = Depends(get_db)):
     data = userDataResponse(token=user_token, userInfo=userInfoResponse.model_validate(
         existing_user))  # model_validate 将ORM模型转换为userInfoBase模型
     return success_response(msg="登录成功", data=data)
+
+
+@router.get("/info", response_model=userAuthResponse)
+async def check_info(user_id: int, db: AsyncSession = Depends(get_db)):
+    # 检查用户是否存在
+    user = await users.get_user_by_token(db, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
+    return success_response(msg="检查用户信息成功", data=user)
