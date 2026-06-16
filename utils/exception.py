@@ -3,12 +3,13 @@ from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from models.exception import PasswordError, UserNotFound
+from models.exception import PasswordError, UserNotFoundError
 # 调试模式, 开发环境下开启, 生产环境下关闭
 DEBUG = True
 # 开发环境，返回详细错误信息
 
-
+# 这里其实也可以不用异步函数，因为异常处理函数不需要异步操作，但Fastapi会自动调用异常处理函数，
+# 保留了async def，后续方便异步操作，可以加
 async def integrity_handler(request: Request, exc: IntegrityError):
     err_msg = str(exc.orig)
     # 判断具体错误类型
@@ -56,7 +57,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 logger = logging.getLogger(__name__)  # 日志记录器
 
 
-async def user_not_found_handler(request: Request, exc: UserNotFound):
+async def user_not_found_handler(request: Request, exc: UserNotFoundError):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"code": status.HTTP_404_NOT_FOUND, "message": "用户不存在"}
@@ -66,7 +67,7 @@ async def user_not_found_handler(request: Request, exc: UserNotFound):
 async def password_error_handler(request: Request, exc: PasswordError):
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        content={"code": status.HTTP_401_UNAUTHORIZED, "message": "用户名或密码错误"}
+        content={"code": status.HTTP_401_UNAUTHORIZED, "message": str(exc) or "用户名密码错误"}
     )
 
 

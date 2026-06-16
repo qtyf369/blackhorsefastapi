@@ -1,20 +1,23 @@
-from utils.exception_handler import exception_handler
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
 from fastapi import Depends, FastAPI
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.ext.asyncio.session import AsyncSession
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
-from fastapi.middleware.cors import CORSMiddleware
-from routers import users, news
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio.session import AsyncSession
+
+from routers import favourite, news, users
+from utils.exception_handler import exception_handler
+
 app = FastAPI()
 # 异常处理函数
 exception_handler(app)
 
 app.include_router(news.router)
 app.include_router(users.router)
+app.include_router(favourite.router)
 # 配置CORS，解决跨域问题
 origin = ["http://localhost:5173"]
 app.add_middleware(

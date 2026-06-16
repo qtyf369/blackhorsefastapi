@@ -2,6 +2,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
+from models.exception import PasswordError, UserNotFoundError
 from models.news import Category, News
 from sqlalchemy import func
 from sqlalchemy import and_
@@ -69,8 +70,7 @@ async def get_user_by_token(db: AsyncSession, token: str):
 async def update_user(db: AsyncSession, username: str, userdata: UserUpdateRequest):
     user = await get_user_by_username(db, username)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
+        raise UserNotFoundError()
     for key, value in userdata.model_dump(exclude_unset=True).items():
         setattr(user, key, value)
     await db.flush()
@@ -82,8 +82,7 @@ async def update_password(db: AsyncSession, user: User, new_password: str, old_p
 
     from utils.security import verify_password
     if not verify_password(old_password, user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="旧密码错误")
+        raise PasswordError("旧密码错误")
     from utils.security import hash_password
     new_password = hash_password(new_password)
     user.password = new_password

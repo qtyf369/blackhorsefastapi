@@ -10,7 +10,6 @@ from schemas.users import (
     UserUpdateRequest,
     UserPasswordUpdateRequest,
     userDataResponse,
-    userInfoBase,
     userInfoResponse,
     userregister,
 )
@@ -74,5 +73,5 @@ async def update_info(userdata: UserUpdateRequest, user: User = Depends(get_curr
 @router.put("/password", response_model=ApiResponse[userInfoResponse])
 async def update_password(userdata: UserPasswordUpdateRequest, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     # 更新用户密码
-    await users.update_password(db, user.username, userdata.new_password, userdata.old_password)
+    await users.update_password(db, user, userdata.new_password, userdata.old_password)
     return success_response(msg="更新用户密码成功", data=userInfoResponse.model_validate(user))
