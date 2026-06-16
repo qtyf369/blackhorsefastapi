@@ -2,6 +2,8 @@ import logging
 from fastapi import Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+
+from models.exception import PasswordError, UserNotFound
 # 调试模式, 开发环境下开启, 生产环境下关闭
 DEBUG = True
 # 开发环境，返回详细错误信息
@@ -52,6 +54,20 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 logger = logging.getLogger(__name__)  # 日志记录器
+
+
+async def user_not_found_handler(request: Request, exc: UserNotFound):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"code": status.HTTP_404_NOT_FOUND, "message": "用户不存在"}
+    )
+
+
+async def password_error_handler(request: Request, exc: PasswordError):
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"code": status.HTTP_401_UNAUTHORIZED, "message": "用户名或密码错误"}
+    )
 
 
 async def generic_handler(request: Request, exc: Exception):

@@ -7,6 +7,8 @@ from crud import users
 from models.users import User
 from schemas.users import (
     ApiResponse,
+    UserUpdateRequest,
+    UserPasswordUpdateRequest,
     userDataResponse,
     userInfoBase,
     userInfoResponse,
@@ -57,5 +59,20 @@ async def login(userdata: userregister, db: AsyncSession = Depends(get_db)):
 
 @router.get("/info", response_model=ApiResponse[userInfoResponse])
 async def get_info(user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    data=userInfoResponse.model_validate(user)
+    data = userInfoResponse.model_validate(user)
     return success_response(msg="获取用户信息成功", data=data)
+
+
+@router.put("/update", response_model=ApiResponse[userInfoResponse])
+async def update_info(userdata: UserUpdateRequest, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    # put是文档里的，一般用于更新所有字段，patch是更新指定字段
+    # 更新用户信息
+    await users.update_user(db, user.username, userdata)
+    return success_response(msg="更新用户信息成功", data=userInfoResponse.model_validate(user))
+
+
+@router.put("/password", response_model=ApiResponse[userInfoResponse])
+async def update_password(userdata: UserPasswordUpdateRequest, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    # 更新用户密码
+    await users.update_password(db, user.username, userdata.new_password, userdata.old_password)
+    return success_response(msg="更新用户密码成功", data=userInfoResponse.model_validate(user))

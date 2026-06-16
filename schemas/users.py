@@ -5,6 +5,7 @@ from typing import Generic, TypeVar
 # 定义泛型类型变量
 T = TypeVar("T")
 
+
 class userregister(BaseModel):
     username: str = Field(..., description="用户名")
     password: str = Field(..., description="密码")
@@ -36,9 +37,23 @@ class userDataResponse(BaseModel):  # 固定的基础信息，必填
         from_attributes=True)
 
 
-
 # 封装返回体,泛型T
 class ApiResponse(BaseModel, Generic[T]):
     code: int = Field(200, description="状态码")
     message: str = Field("success", description="状态描述")
     data: T | None = Field(None, description="数据")
+
+
+class UserUpdateRequest(BaseModel):
+    nickname: Optional[str] = Field(None, max_length=50, description="用户昵称")
+    gender: Optional[str] = Field(None, max_length=50, description="用户性别")
+    bio: Optional[str] = Field(None, description="用户简介")
+    avatar: Optional[str] = Field(None, description="用户头像")
+    phone: Optional[str] = Field(None, max_length=11, description="用户手机号")
+
+
+class UserPasswordUpdateRequest(BaseModel):
+    new_password: str = Field(..., alias="newPassword", description="新密码")
+    old_password: str = Field(..., alias="oldPassword", description="旧密码")
+    model_config = ConfigDict(
+        populate_by_name=True)

@@ -9,5 +9,6 @@ def hash_password(plain_password: str):
     return context.hash(plain_password)
 
 
-def verify_password(plain_password: str, hashed_password: str):
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # 验证密码是否匹配
     return context.verify(plain_password, hashed_password)
