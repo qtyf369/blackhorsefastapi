@@ -1,9 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from pydantic import ConfigDict
-from typing import Generic, TypeVar
-# 定义泛型类型变量
-T = TypeVar("T")
 
 
 class userregister(BaseModel):
@@ -35,13 +32,6 @@ class userDataResponse(BaseModel):  # 固定的基础信息，必填
         # from_attributes=True允许把ORM模型转换为Pydantic模型
         populate_by_name=True,
         from_attributes=True)
-
-
-# 封装返回体,泛型T
-class ApiResponse(BaseModel, Generic[T]):
-    code: int = Field(200, description="状态码")
-    message: str = Field("success", description="状态描述")
-    data: T | None = Field(None, description="数据")
 
 
 class UserUpdateRequest(BaseModel):

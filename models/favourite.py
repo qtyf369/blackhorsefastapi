@@ -11,7 +11,7 @@ class Base(DeclarativeBase):
 
 
 class FavourtieNews(Base):
-    __tablename__ = "favourtie"
+    __tablename__ = "favourite"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, comment="收藏id")
     user_id: Mapped[int] = mapped_column(
         Integer, nullable=False, comment="用户id")

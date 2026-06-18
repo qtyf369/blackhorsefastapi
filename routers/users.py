@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config.db_conf import get_db
 from crud import users
 from models.users import User
+from schemas.common import ApiResponse
 from schemas.users import (
-    ApiResponse,
     UserUpdateRequest,
     UserPasswordUpdateRequest,
     userDataResponse,

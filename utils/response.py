@@ -1,6 +1,6 @@
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from schemas.users import ApiResponse
+from schemas.common import ApiResponse
 
 
 def success_response(msg: str = "success", data=None):
