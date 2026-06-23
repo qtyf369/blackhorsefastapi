@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from sqlalchemy import Integer, String, DateTime, func, Index
 from typing import Optional
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
+
 
 
 class Base(DeclarativeBase):
@@ -12,10 +15,11 @@ class Base(DeclarativeBase):
 
 class FavourtieNews(Base):
     __tablename__ = "favourite"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, comment="收藏id")
+    id: Mapped[int] = mapped_column(Integer,  primary_key=True, comment="收藏id")
     user_id: Mapped[int] = mapped_column(
         Integer, nullable=False, comment="用户id")
     news_id: Mapped[int] = mapped_column(
-        Integer, nullable=False, comment="新闻id")
+        Integer, ForeignKey("news.id"), nullable=False, comment="新闻id")
     created_at: Mapped[datetime] = mapped_column(
         default=func.now(), comment="创建时间")
+    news: Mapped["News"] = relationship("News", back_populates="favourites")
