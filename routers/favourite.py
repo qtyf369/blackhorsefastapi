@@ -49,3 +49,12 @@ page_size: int = Query(10, alias="pageSize", le=100, description="每页数量")
  db: AsyncSession = Depends(get_db)):
     favourites = await favourite.get_favourite_list(db, current_user.id, page, page_size)
     return success_response(msg="获取收藏列表成功", data=favourites)
+
+
+@router.delete("/clear", response_model=ApiResponse[None])
+async def clear_favourites(current_user: User = Depends(auth.get_current_user), db: AsyncSession = Depends(get_db)):
+    status = await favourite.remove_all_favourites(db, current_user.id)
+    if not status:
+        raise HTTPException(status_code=404, detail="删除未成功，未收藏")
+
+    return success_response(msg=f"成功删除{status}条收藏记录", data=None)

@@ -67,3 +67,9 @@ async def get_favourite_list(db: AsyncSession, user_id: int, page: int, page_siz
 
 
     return FavouriteListResponse(total=totalcount, list=items, has_more=has_more)
+
+
+async def remove_all_favourites(db: AsyncSession, user_id: int):
+    stmt = delete(FavourtieNews).where(FavourtieNews.user_id == user_id)
+    result = await db.execute(stmt)
+    return result.rowcount 
