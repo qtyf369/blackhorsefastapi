@@ -6,6 +6,8 @@ from sqlalchemy import Integer, String, DateTime, func, Index, Enum as Sqlalchem
 from typing import Optional
 from enum import Enum
 from datetime import timezone, datetime, timedelta
+from models.base import Base
+
 
 
 class Gender(str, Enum):
@@ -13,8 +15,7 @@ class Gender(str, Enum):
     FEMALE = "female"
 
 
-class Base(DeclarativeBase):
-    pass
+
 
 
 class User(Base):

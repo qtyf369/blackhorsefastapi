@@ -6,11 +6,12 @@ from sqlalchemy import Integer, String, DateTime, func, Index
 from typing import Optional
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from models.news import News
+from models.base import Base
 
 
 
-class Base(DeclarativeBase):
-    pass
+
 
 
 class FavourtieNews(Base):
@@ -22,4 +23,4 @@ class FavourtieNews(Base):
         Integer, ForeignKey("news.id"), nullable=False, comment="新闻id")
     created_at: Mapped[datetime] = mapped_column(
         default=func.now(), comment="创建时间")
-    news: Mapped["News"] = relationship("News", back_populates="favourites")
+    news: Mapped["News"] = relationship(News) # 关联新闻模型

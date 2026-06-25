@@ -28,6 +28,7 @@ class FavouriteListItem(BaseModel):
     category_id: Optional[int] = Field(None, alias="categoryId", description="分类ID")
     views: Optional[int] = Field(None, description="浏览量")
     favorite_time: datetime = Field(..., alias="favoriteTime", description="收藏时间")
+    model_config = ConfigDict(populate_by_name=True)  
 
 class CheckFavouriteRequest(BaseModel):
     news_id: int = Field(..., alias="newsId")

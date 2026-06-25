@@ -4,17 +4,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from sqlalchemy import Integer, String, DateTime, func, Index
 from typing import Optional
+from models.base import Base
 
 
-class Base(DeclarativeBase):
+
+class timeMixin:
     created_at: Mapped[datetime] = mapped_column(
         default=func.now(),  comment="创建时间")
     updated_at: Mapped[datetime] = mapped_column(
         default=func.now(), onupdate=func.now(),  comment="更新时间")
 
-
 # 新闻类别模型
-class Category(Base):
+class Category(Base, timeMixin):
     __tablename__ = "news_category"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, comment="分类ID")
     name: Mapped[str] = mapped_column(
@@ -27,7 +28,7 @@ class Category(Base):
 # 新闻模型
 
 
-class News(Base):
+class News(Base, timeMixin):
     __tablename__ = "news"
 
     __table_args__ = (
