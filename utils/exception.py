@@ -10,6 +10,8 @@ DEBUG = True
 
 # 这里其实也可以不用异步函数，因为异常处理函数不需要异步操作，但Fastapi会自动调用异常处理函数，
 # 保留了async def，后续方便异步操作，可以加
+
+
 async def integrity_handler(request: Request, exc: IntegrityError):
     err_msg = str(exc.orig)
     # 判断具体错误类型
@@ -67,11 +69,13 @@ async def user_not_found_handler(request: Request, exc: UserNotFoundError):
 async def password_error_handler(request: Request, exc: PasswordError):
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        content={"code": status.HTTP_401_UNAUTHORIZED, "message": str(exc) or "用户名密码错误"}
+        content={"code": status.HTTP_401_UNAUTHORIZED,
+                 "message": str(exc) or "用户名密码错误"}
     )
 
 
 async def generic_handler(request: Request, exc: Exception):
+    print(">>> generic_handler 被调用了！")
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
     err_data = None
     if DEBUG:

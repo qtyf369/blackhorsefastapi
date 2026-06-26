@@ -8,14 +8,16 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from models.news import News
 from models.base import Base
-
-
-
-
+from sqlalchemy import UniqueConstraint
 
 
 class FavourtieNews(Base):
     __tablename__ = "favourite"
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'news_id',
+                         name='idx_favourite_user_id_news_id'),
+    )
     id: Mapped[int] = mapped_column(Integer,  primary_key=True, comment="收藏id")
     user_id: Mapped[int] = mapped_column(
         Integer, nullable=False, comment="用户id")
@@ -23,4 +25,4 @@ class FavourtieNews(Base):
         Integer, ForeignKey("news.id"), nullable=False, comment="新闻id")
     created_at: Mapped[datetime] = mapped_column(
         default=func.now(), comment="创建时间")
-    news: Mapped["News"] = relationship(News) # 关联新闻模型
+    news: Mapped["News"] = relationship(News)  # 关联新闻模型

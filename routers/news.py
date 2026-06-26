@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from crud import news
 from models.news import Category, News
-from config.db_conf import get_db
 from fastapi import Query
 from models.news import News
 from config.db_conf import get_db

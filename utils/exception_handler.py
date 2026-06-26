@@ -1,7 +1,7 @@
 from fastapi.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from models.exception import  PasswordError, UserNotFoundError
+from models.exception import PasswordError, UserNotFoundError
 
 
 def exception_handler(app):
