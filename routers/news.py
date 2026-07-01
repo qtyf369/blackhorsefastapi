@@ -6,20 +6,22 @@ from fastapi import Query
 from models.news import News
 from config.db_conf import get_db
 from fastapi import HTTPException
-
-
+from schemas.common import ApiResponse
+from schemas.news import NewsCategory
+from utils.response import success_response
 router = APIRouter(prefix="/api/news", tags=["news"])
 
 
-@router.get("/categories")
+@router.get("/categories", response_model=ApiResponse[list[NewsCategory]])
 async def get_categories(
         db: AsyncSession = Depends(get_db), skip: int = 0, limit: int = 100):
+
+    # 从数据库获取新闻分类列表,这是Python对象
     categories = await news.get_categories(db, skip, limit)
-    return {
-        "code": 200,
-        "message": "success",
-        "data": categories
-    }
+    # 转换为Pydantic模型
+    categories = [NewsCategory.model_validate(
+        category) for category in categories]
+    return success_response(msg="success", data=categories)
 
 
 @router.get("/list")
@@ -39,7 +41,7 @@ async def get_news_list(
     }
 
 
-@router.get("/detail")
+@router.get("/detail", response_model=ApiResponse[News])
 async def get_news_detail(
         db: AsyncSession = Depends(get_db),
         id: int = Query(..., alias="id")):
@@ -53,18 +55,14 @@ async def get_news_detail(
     # 获取相关新闻
     related_news: list[News] = await news.related_news(db, id, news_detail.category_id)
 
-    return {
-        "code": 200,
-        "message": "success",
-        "data":  {
-            "id": id,
-            "title": news_detail.title,
-            "content": news_detail.content,
-            "image": news_detail.image,
-            "author": news_detail.author,
-            "publishTime": news_detail.publish_time,
-            "categoryId": news_detail.category_id,
-            "views": news_detail.views,
-            "relatedNews": related_news
-        }
-    }
+    return success_response(msg="success", data={
+        "id": id,
+        "title": news_detail.title,
+        "content": news_detail.content,
+        "image": news_detail.image,
+        "author": news_detail.author,
+        "publishTime": news_detail.publish_time,
+        "categoryId": news_detail.category_id,
+        "views": news_detail.views,
+        "relatedNews": related_news
+    })

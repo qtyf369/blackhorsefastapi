@@ -4,11 +4,23 @@ from fastapi import HTTPException
 from models.news import Category, News
 from sqlalchemy import func
 from sqlalchemy import and_
+from cache.news_cache import get_cache_categories, set_cache_categories
+from fastapi.encoders import jsonable_encoder
+
+# 在crud中直接处理缓存
 
 
 async def get_categories(db: AsyncSession, skip: int = 0, limit: int = 100):
-
-    return (await db.execute(select(Category).offset(skip).limit(limit))).scalars().all()
+    # 先读取缓存，如果没有缓存，再从数据库读取，并设置缓存
+    cache_categories = await get_cache_categories()
+    if cache_categories:
+        return cache_categories
+    # 如果没有缓存，从数据库读取分类缓存
+    categories = (await db.execute(select(Category).offset(skip).limit(limit))).scalars().all()
+    # 缓存分类
+    categories = jsonable_encoder(categories)  # 转换为jsonable格式,把ORM对象转换为字典
+    await set_cache_categories(categories)
+    return categories
 
 
 async def get_news_list(db: AsyncSession, category_id: int, page: int = 1, page_size: int = 10):
