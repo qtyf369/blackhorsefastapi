@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from pydantic import ConfigDict
+from datetime import datetime
 
 
 class NewsCategory(BaseModel):
@@ -11,15 +12,19 @@ class NewsCategory(BaseModel):
     update_at: str = Field(alias="updateAt", description="更新时间")
 
 
-class News(BaseModel):
+class NewsDetail(BaseModel):
     id: int = Field(..., description="新闻ID")
     title: str = Field(..., description="新闻标题")
     content: str = Field(..., description="新闻内容")
     category: Optional[int] = Field(None, description="分类")
     image: Optional[str] = Field(None, description="新闻图片")
     author: Optional[str] = Field(None, description="新闻作者")
-    publish_time: str = Field(alias="publishTime", description="发布时间")
-    category_id: int = Field(description="分类ID")
-    views: int = Field(description="阅读量")
-    created_at: Optional[str] = Field(alias="createdAt", description="创建时间")
-    updated_at: Optional[str] = Field(alias="updateAt", description="更新时间")
+    publish_time: datetime = Field(alias="publishTime", description="发布时间")
+    category_id: int = Field(alias="categoryId", description="分类ID")
+    views: int = Field(alias="views", description="阅读量")
+    created_at: Optional[datetime] = Field(None, alias="createdAt", description="创建时间")
+    updated_at: Optional[datetime] = Field(None, alias="updateAt", description="更新时间")
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+class RelatedNews(NewsDetail):
+    related_news: list[NewsDetail] = Field(alias="relatedNews", description="相关新闻")
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)

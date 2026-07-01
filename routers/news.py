@@ -3,12 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crud import news
 from models.news import Category, News
 from fastapi import Query
-from models.news import News
 from config.db_conf import get_db
 from fastapi import HTTPException
 from schemas.common import ApiResponse
-from schemas.news import NewsCategory
+from schemas.news import NewsCategory, RelatedNews
 from utils.response import success_response
+
+
+
 router = APIRouter(prefix="/api/news", tags=["news"])
 
 
@@ -41,7 +43,7 @@ async def get_news_list(
     }
 
 
-@router.get("/detail", response_model=ApiResponse[News])
+@router.get("/detail", response_model=ApiResponse[RelatedNews])
 async def get_news_detail(
         db: AsyncSession = Depends(get_db),
         id: int = Query(..., alias="id")):

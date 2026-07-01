@@ -4,6 +4,7 @@ from redis import Redis
 from typing import Dict
 from typing import Any
 CATEGORY_KEY = "news:categories"
+from typing import Optional
 
 # 读取新闻分类缓存
 
@@ -18,14 +19,18 @@ async def set_cache_categories(data: list[Dict[str, Any]]):
 
 
 # 缓存新闻列表
-NEWS_LIST_KEY = "news:list"
+NEWS_LIST_KEY_PREFIX = "news:list"
 # 读取新闻列表缓存
 
 
-async def get_cache_news_list():
-    return await cache_conf.get_list_dict_cache(NEWS_LIST_KEY)
+async def get_cache_news_list(category_id: int, page: int, page_size: int):
+    key=f"{NEWS_LIST_KEY_PREFIX}:{category_id}:{page}:{page_size}"
+    return await cache_conf.get_list_dict_cache(key)
 # 写入新闻列表缓存
 
 
-async def set_cache_news_list(data: Dict[str, Any]):
-    await cache_conf.set_cache(NEWS_LIST_KEY, data, 7200)
+async def set_cache_news_list(category_id: Optional[int], data: Dict[str, Any],page: int, page_size: int):
+    if category_id is None:
+        category_id = 'all'
+    key=f"{NEWS_LIST_KEY_PREFIX}:{category_id}:{page}:{page_size}"
+    await cache_conf.set_cache(key, data, 1800)
