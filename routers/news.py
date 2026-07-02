@@ -8,7 +8,9 @@ from fastapi import HTTPException
 from schemas.common import ApiResponse
 from schemas.news import NewsCategory, RelatedNews
 from utils.response import success_response
-
+from typing import Dict
+from typing import Any
+from schemas.news import NewsDetail
 
 
 router = APIRouter(prefix="/api/news", tags=["news"])
@@ -48,6 +50,8 @@ async def get_news_detail(
         db: AsyncSession = Depends(get_db),
         id: int = Query(..., alias="id")):
     news_detail = await news.get_news_detail(db, id)
+    # 转换为Pydantic模型，这样就可以直接使用模型的属性
+    news_detail = NewsDetail.model_validate(news_detail)
 
     # 增加views 并返回是否成功
     success: bool = await news.increase_news_views(db, id)
@@ -55,7 +59,7 @@ async def get_news_detail(
         raise HTTPException(status_code=400, detail="Views increase failed")
 
     # 获取相关新闻
-    related_news: list[News] = await news.related_news(db, id, news_detail.category_id)
+    related_news: list[Dict[str, Any]] = await news.related_news(db, id, news_detail.category_id)
 
     return success_response(msg="success", data={
         "id": id,
